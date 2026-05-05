@@ -53,3 +53,16 @@ def register(mcp: FastMCP):
             f"/activities/user/{client.user_id}/thismonth/distances",
         )
         return result or {}
+
+    @mcp.tool()
+    def get_activity_streams(activity_id: int) -> list[dict]:
+        """Get all time-series streams for an activity (heart rate, elevation, GPS, pace, cadence, etc.).
+
+        Args:
+            activity_id: The numeric ID of the activity.
+        """
+        result = client.request(
+            "GET",
+            f"/activities_streams/activity_id/{activity_id}/all",
+        )
+        return result or []
