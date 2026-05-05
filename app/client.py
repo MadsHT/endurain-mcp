@@ -35,20 +35,18 @@ class EndurainClient:
             headers={"Content-Type": "application/x-www-form-urlencoded", "X-Client-Type": "web"},
             verify=False,
         )
-        import sys
-        print(f"LOGIN STATUS: {response.status_code}", file=sys.stderr)
-        print(f"LOGIN BODY: {response.text[:500]}", file=sys.stderr)
         response.raise_for_status()
         data = response.json()
-        self._access_token = data.get("access_token")
-        print(f"ACCESS TOKEN PRESENT: {bool(self._access_token)}", file=sys.stderr)
-        if self._access_token:
-            self._user_id = _decode_user_id_from_jwt(self._access_token)
+        self._access_token = data["access_token"]
+        self._user_id = _decode_user_id_from_jwt(self._access_token)
 
     def _headers(self) -> dict:
         if not self._access_token:
             self._login()
-        return {"Authorization": f"Bearer {self._access_token}"}
+        return {
+            "Authorization": f"Bearer {self._access_token}",
+            "X-Client-Type": "web",
+        }
 
     def request(self, method: str, path: str, **kwargs) -> dict | list | None:
         url = f"{ENDURAIN_URL}/api/v1{path}"
