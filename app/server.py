@@ -13,5 +13,8 @@ mcp = FastMCP("endurain", host="0.0.0.0", port=8000)
 activities_tools.register(mcp)
 health_tools.register(mcp)
 
+# Expose the ASGI app for uvicorn so session crashes don't kill the process
+sse_app = mcp.sse_app()
+
 if __name__ == "__main__":
     mcp.run(transport="sse")
