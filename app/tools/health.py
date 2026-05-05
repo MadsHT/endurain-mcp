@@ -20,6 +20,8 @@ def register(mcp: FastMCP):
             "/health/sleep",
             params={"start_date": str(start), "end_date": str(end)},
         )
+        if isinstance(result, dict):
+            result = result.get("data", [])
         return result or []
 
     @mcp.tool()
@@ -36,6 +38,8 @@ def register(mcp: FastMCP):
             "/health/steps",
             params={"start_date": str(start), "end_date": str(end)},
         )
+        if isinstance(result, dict):
+            result = result.get("data", [])
         return result or []
 
     @mcp.tool()
@@ -52,4 +56,6 @@ def register(mcp: FastMCP):
             "/health/weight",
             params={"start_date": str(start), "end_date": str(end)},
         )
+        if isinstance(result, dict):
+            result = result.get("data", [])
         return result or []
