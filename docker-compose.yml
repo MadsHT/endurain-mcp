@@ -1,0 +1,10 @@
+services:
+  endurain-mcp:
+    image: ghcr.io/madsht/endurain-mcp:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      ENDURAIN_URL: https://<endurain_instance_url>
+      ENDURAIN_USERNAME: your_username
+      ENDURAIN_PASSWORD: your_password

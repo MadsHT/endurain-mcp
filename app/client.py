@@ -1,0 +1,68 @@
+import base64
+import json
+import os
+
+import httpx
+
+ENDURAIN_URL = os.environ["ENDURAIN_URL"].rstrip("/")
+ENDURAIN_USERNAME = os.environ["ENDURAIN_USERNAME"]
+ENDURAIN_PASSWORD = os.environ["ENDURAIN_PASSWORD"]
+
+
+def _decode_user_id_from_jwt(token: str) -> int:
+    payload_part = token.split(".")[1]
+    padding = 4 - len(payload_part) % 4
+    if padding != 4:
+        payload_part += "=" * padding
+    payload = json.loads(base64.urlsafe_b64decode(payload_part))
+    return int(payload["sub"])
+
+
+class EndurainClient:
+    def __init__(self):
+        self._access_token: str | None = None
+        self._user_id: int | None = None
+
+    def _login(self):
+        response = httpx.post(
+            f"{ENDURAIN_URL}/api/auth/login",
+            data={
+                "username": ENDURAIN_USERNAME,
+                "password": ENDURAIN_PASSWORD,
+                "grant_type": "password",
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            verify=False,
+        )
+        response.raise_for_status()
+        data = response.json()
+        self._access_token = data["access_token"]
+        self._user_id = _decode_user_id_from_jwt(self._access_token)
+
+    def _headers(self) -> dict:
+        if not self._access_token:
+            self._login()
+        return {"Authorization": f"Bearer {self._access_token}"}
+
+    def request(self, method: str, path: str, **kwargs) -> dict | list | None:
+        url = f"{ENDURAIN_URL}/api{path}"
+        response = httpx.request(
+            method, url, headers=self._headers(), verify=False, **kwargs
+        )
+        if response.status_code == 401:
+            self._login()
+            response = httpx.request(
+                method, url, headers=self._headers(), verify=False, **kwargs
+            )
+        response.raise_for_status()
+        return response.json()
+
+    @property
+    def user_id(self) -> int:
+        if self._user_id is None:
+            self._login()
+        return self._user_id
+
+
+# Shared singleton used by all tools
+client = EndurainClient()
