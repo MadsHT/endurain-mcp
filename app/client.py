@@ -30,6 +30,7 @@ class EndurainClient:
                 "username": ENDURAIN_USERNAME,
                 "password": ENDURAIN_PASSWORD,
                 "grant_type": "password",
+                "scope": "activities:read health:read profile",
             },
             headers={"Content-Type": "application/x-www-form-urlencoded", "X-Client-Type": "web"},
             verify=False,
@@ -50,6 +51,7 @@ class EndurainClient:
             method, url, headers=self._headers(), verify=False, **kwargs
         )
         if response.status_code == 401:
+            self._access_token = None
             self._login()
             response = httpx.request(
                 method, url, headers=self._headers(), verify=False, **kwargs
