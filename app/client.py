@@ -25,7 +25,7 @@ class EndurainClient:
 
     def _login(self):
         response = httpx.post(
-            f"{ENDURAIN_URL}/api/auth/login",
+            f"{ENDURAIN_URL}/api/v1/auth/login",
             data={
                 "username": ENDURAIN_USERNAME,
                 "password": ENDURAIN_PASSWORD,
@@ -45,7 +45,7 @@ class EndurainClient:
         return {"Authorization": f"Bearer {self._access_token}"}
 
     def request(self, method: str, path: str, **kwargs) -> dict | list | None:
-        url = f"{ENDURAIN_URL}/api{path}"
+        url = f"{ENDURAIN_URL}/api/v1{path}"
         response = httpx.request(
             method, url, headers=self._headers(), verify=False, **kwargs
         )
