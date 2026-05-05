@@ -31,7 +31,7 @@ class EndurainClient:
                 "password": ENDURAIN_PASSWORD,
                 "grant_type": "password",
             },
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            headers={"Content-Type": "application/x-www-form-urlencoded", "X-Client-Type": "web"},
             verify=False,
         )
         response.raise_for_status()
