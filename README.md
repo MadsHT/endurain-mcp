@@ -1,3 +1,5 @@
+> This project was generated with [OpenCode](https://opencode.ai) using Claude Sonnet 4.5.
+
 # endurain-mcp
 
 A Model Context Protocol (MCP) server that exposes [Endurain](https://codeberg.org/endurain-project/endurain) fitness data as tools for AI assistants such as OpenCode.
