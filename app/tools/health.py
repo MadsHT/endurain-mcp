@@ -13,16 +13,10 @@ def register(mcp: FastMCP):
         Args:
             days: Number of days to look back (default 7).
         """
-        end = datetime.now(timezone.utc).date()
-        start = end - timedelta(days=days - 1)
-        result = client.request(
-            "GET",
-            "/health/sleep",
-            params={"start_date": str(start), "end_date": str(end)},
-        )
-        if isinstance(result, dict):
-            result = result.get("data", [])
-        return result or []
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days - 1)).date()
+        result = client.request("GET", "/health/sleep")
+        records = result.get("records", []) if isinstance(result, dict) else []
+        return [r for r in records if r.get("date", "") >= str(cutoff)]
 
     @mcp.tool()
     def get_steps(days: int = 7) -> list[dict]:
@@ -31,16 +25,10 @@ def register(mcp: FastMCP):
         Args:
             days: Number of days to look back (default 7).
         """
-        end = datetime.now(timezone.utc).date()
-        start = end - timedelta(days=days - 1)
-        result = client.request(
-            "GET",
-            "/health/steps",
-            params={"start_date": str(start), "end_date": str(end)},
-        )
-        if isinstance(result, dict):
-            result = result.get("data", [])
-        return result or []
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days - 1)).date()
+        result = client.request("GET", "/health/steps")
+        records = result.get("records", []) if isinstance(result, dict) else []
+        return [r for r in records if r.get("date", "") >= str(cutoff)]
 
     @mcp.tool()
     def get_weight(days: int = 30) -> list[dict]:
@@ -49,13 +37,7 @@ def register(mcp: FastMCP):
         Args:
             days: Number of days to look back (default 30).
         """
-        end = datetime.now(timezone.utc).date()
-        start = end - timedelta(days=days - 1)
-        result = client.request(
-            "GET",
-            "/health/weight",
-            params={"start_date": str(start), "end_date": str(end)},
-        )
-        if isinstance(result, dict):
-            result = result.get("data", [])
-        return result or []
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days - 1)).date()
+        result = client.request("GET", "/health/weight")
+        records = result.get("records", []) if isinstance(result, dict) else []
+        return [r for r in records if r.get("date", "") >= str(cutoff)]
