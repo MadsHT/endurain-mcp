@@ -20,5 +20,5 @@ if __name__ == "__main__":
         transport="streamable-http",
         host="0.0.0.0",
         port=8000,
-        stateless_http=True  # <-- THE CRITICAL FIX
+        stateless_http=True
     )
