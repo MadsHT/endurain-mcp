@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from client import client
 
 
-def register(mcp: FastMCP):
+def register(mcp: MCPServer):
 
     @mcp.tool()
     def get_sleep(days: int = 7) -> list[dict]:

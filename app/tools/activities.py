@@ -1,8 +1,8 @@
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from client import client
 
 
-def register(mcp: FastMCP):
+def register(mcp: MCPServer):
 
     @mcp.tool()
     def get_recent_activities(limit: int = 10) -> list[dict]:
