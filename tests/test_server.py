@@ -20,6 +20,8 @@ from client import client
 
 def _get_registered_tools(mcp_instance: MCPServer):
     """Helper to access registered tools across MCP server internal representations."""
+    if hasattr(mcp_instance, "_tool_manager") and hasattr(mcp_instance._tool_manager, "_tools"):
+        return list(mcp_instance._tool_manager._tools.values())
     if hasattr(mcp_instance, "_tool_manager") and hasattr(mcp_instance._tool_manager, "list_tools"):
         return mcp_instance._tool_manager.list_tools()
     raise AttributeError("Unable to retrieve registered tools from MCPServer instance")
