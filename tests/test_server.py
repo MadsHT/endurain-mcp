@@ -9,6 +9,7 @@ os.environ.setdefault("ENDURAIN_PASSWORD", "test_password")
 
 from mcp.server.mcpserver import MCPServer
 import server
+from client import client
 
 
 def test_server_initialization():
@@ -31,7 +32,6 @@ def test_tool_registration():
         "get_weight",
     }
     
-    # Retrieve registered tool names from the server tool manager
     registered_tools = {tool.name for tool in server.mcp._tool_manager.list_tools()}
     assert expected_tools.issubset(registered_tools), f"Missing tools: {expected_tools - registered_tools}"
 
@@ -41,14 +41,19 @@ def test_get_recent_activities_tool(mock_request):
     """Test get_recent_activities tool execution and parameter capping."""
     mock_request.return_value = [{"activity_id": 123, "name": "Run"}]
     
-    # Find tool function
-    tool_func = None
-    for tool in server.mcp._tool_manager.list_tools():
-        if tool.name == "get_recent_activities":
-            tool_func = tool.fn
-            break
-            
-    assert tool_func is not None
-    result = tool_func(limit=5)
-    assert len(result) == 1
-    assert result[0]["activity_id"] == 123
+    # Mock user_id property to prevent network call to _login()
+    with patch.object(type(client), "user_id", 42):
+        tool_func = None
+        for tool in server.mcp._tool_manager.list_tools():
+            if tool.name == "get_recent_activities":
+                tool_func = tool.fn
+                break
+                
+        assert tool_func is not None
+        result = tool_func(limit=5)
+        assert len(result) == 1
+        assert result[0]["activity_id"] == 123
+        mock_request.assert_called_once_with(
+            "GET",
+            "/activities/user/42/page_number/1/num_records/5",
+        )
